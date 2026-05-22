@@ -7,6 +7,7 @@ Esta pasta concentrara a documentacao tecnica do CircuitStock.
 - Decisoes de arquitetura.
 - Planejamento de etapas.
 - Anotacoes sobre modelo de dados e banco local.
+- Notas sobre seeds e dados iniciais de desenvolvimento.
 - Registros de auditoria tecnica do projeto.
 - Guias de manutencao e operacao.
 
@@ -18,4 +19,4 @@ Esta pasta concentrara a documentacao tecnica do CircuitStock.
 
 ## Estado atual
 
-A pasta foi criada para organizar a documentacao futura. O projeto ainda nao possui Prisma, SQLite configurado ou modelo de dados definitivo.
+A pasta foi criada para organizar a documentacao futura. O projeto ja possui Prisma com SQLite local, schema inicial, migrations e seed basico de categorias e localizacoes.

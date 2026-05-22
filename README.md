@@ -17,16 +17,20 @@ Principio central do sistema:
 - Next.js com App Router
 - TypeScript
 - Tailwind CSS
+- Prisma 7
+- SQLite local
 - ESLint
 - Estrutura com `src/`
 
-Nesta etapa ainda nao ha Prisma, banco SQLite, autenticacao, CRUD ou funcionalidades reais de inventario.
+O projeto usa uma stack local e nao possui autenticacao no MVP.
 
 ## Status do desenvolvimento
 
 O projeto possui uma base visual inicial com layout, menu lateral, dashboard estatico e paginas placeholder para as principais areas do sistema.
 
-As proximas etapas previstas incluem configurar Prisma + SQLite, modelar os dados principais e implementar os primeiros cadastros.
+O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed basico de categorias e localizacoes.
+
+Ainda nao ha CRUD, integracao da interface com o banco, auditoria funcional ou BOM Checker implementado.
 
 ## Como rodar localmente
 
@@ -53,7 +57,15 @@ Comandos uteis:
 ```bash
 npm run lint
 npm run build
+npm run prisma:generate
+npm run prisma:validate
+npm run prisma:format
+npm run prisma:migrate
+npm run prisma:studio
+npm run db:seed
 ```
+
+Antes de usar o banco local em uma copia nova do projeto, configure o `.env` com base em `.env.example`, aplique as migrations e rode o seed quando necessario.
 
 ## Estrutura inicial de pastas
 
@@ -68,6 +80,12 @@ src/
     localizacoes/
     movimentacoes/
     projetos/
+  lib/
+  generated/
+prisma/
+  migrations/
+  schema.prisma
+  seed.ts
 docs/
 public/
 ```
@@ -75,6 +93,9 @@ public/
 - `src/`: codigo-fonte da aplicacao.
 - `src/app/`: rotas, paginas e layout do App Router.
 - `src/app/_components/`: componentes reutilizaveis ligados a camada `app`.
+- `src/lib/`: helpers compartilhados, incluindo o client Prisma.
+- `src/generated/prisma/`: Prisma Client gerado localmente e ignorado pelo Git.
+- `prisma/`: schema, migrations e seed do banco SQLite local.
 - `docs/`: documentacao tecnica e registros de decisao do projeto.
 - `public/`: arquivos publicos estaticos.
 
@@ -91,4 +112,6 @@ Esses recursos podem ser avaliados em etapas futuras, depois que o fluxo local p
 
 ## Dados locais e arquivos sensiveis
 
-O banco local, arquivos `.env`, backups, exportacoes e outros dados sensiveis nao devem ser versionados. Quando forem criados, esses arquivos devem permanecer fora do Git por meio do `.gitignore` ou de outra estrategia equivalente.
+O banco local, arquivos `.env`, backups, exportacoes e outros dados sensiveis nao devem ser versionados. Esses arquivos devem permanecer fora do Git por meio do `.gitignore` ou de outra estrategia equivalente.
+
+O arquivo `.env.example` deve ser versionado para orientar a configuracao local.
