@@ -26,11 +26,11 @@ O projeto usa uma stack local e nao possui autenticacao no MVP.
 
 ## Status do desenvolvimento
 
-O projeto possui uma base visual inicial com layout, menu lateral, dashboard estatico e paginas placeholder para as principais areas do sistema.
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local e paginas placeholder para as principais areas do sistema.
 
 O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed basico de categorias e localizacoes.
 
-Ainda nao ha CRUD, integracao da interface com o banco, auditoria funcional ou BOM Checker implementado.
+Ainda nao ha CRUD, formularios de cadastro, auditoria funcional ou BOM Checker implementado.
 
 ## Como rodar localmente
 

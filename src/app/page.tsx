@@ -1,11 +1,45 @@
-const stats = [
-  { label: "Total de componentes", value: "0" },
-  { label: "Categorias", value: "0" },
-  { label: "Itens em baixa", value: "0" },
-  { label: "Projetos ativos", value: "0" },
-];
+import { connection } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export default function Dashboard() {
+async function getDashboardStats() {
+  await connection();
+
+  const [
+    totalComponents,
+    totalCategories,
+    totalLocations,
+    lowStockItems,
+    activeProjects,
+  ] = await Promise.all([
+    prisma.component.count(),
+    prisma.category.count(),
+    prisma.location.count(),
+    prisma.component.count({
+      where: {
+        quantity: {
+          lte: prisma.component.fields.minimumQuantity,
+        },
+      },
+    }),
+    prisma.project.count({
+      where: {
+        status: "ACTIVE",
+      },
+    }),
+  ]);
+
+  return [
+    { label: "Total de componentes", value: totalComponents },
+    { label: "Categorias", value: totalCategories },
+    { label: "Localizacoes", value: totalLocations },
+    { label: "Itens em baixa", value: lowStockItems },
+    { label: "Projetos ativos", value: activeProjects },
+  ];
+}
+
+export default async function Dashboard() {
+  const stats = await getDashboardStats();
+
   return (
     <section className="mx-auto max-w-6xl">
       <div className="border-b border-slate-200 pb-6">
@@ -21,7 +55,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {stats.map((stat) => (
           <article
             key={stat.label}
@@ -29,7 +63,7 @@ export default function Dashboard() {
           >
             <p className="text-sm font-medium text-slate-500">{stat.label}</p>
             <p className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">
-              {stat.value}
+              {stat.value.toLocaleString("pt-BR")}
             </p>
           </article>
         ))}
