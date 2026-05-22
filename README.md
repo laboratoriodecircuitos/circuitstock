@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CircuitStock
 
-## Getting Started
+Sistema local de inventario, auditoria e consulta de componentes eletronicos para laboratorio.
 
-First, run the development server:
+## Objetivo
+
+O CircuitStock tem como objetivo substituir controles em planilhas e centralizar informacoes importantes sobre componentes eletronicos: o que existe no estoque, onde cada item esta guardado e se a quantidade disponivel atende a um projeto.
+
+Principio central do sistema:
+
+1. O que eu tenho?
+2. Onde esta?
+3. Isso e suficiente para montar este projeto?
+
+## Stack atual
+
+- Next.js com App Router
+- TypeScript
+- Tailwind CSS
+- ESLint
+- Estrutura com `src/`
+
+Nesta etapa ainda nao ha Prisma, banco SQLite, autenticacao, CRUD ou funcionalidades reais de inventario.
+
+## Status do desenvolvimento
+
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard estatico e paginas placeholder para as principais areas do sistema.
+
+As proximas etapas previstas incluem configurar Prisma + SQLite, modelar os dados principais e implementar os primeiros cadastros.
+
+## Como rodar localmente
+
+Instale as dependencias:
+
+```bash
+npm install
+```
+
+Inicie o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Comandos uteis:
 
-## Learn More
+```bash
+npm run lint
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura inicial de pastas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+  app/
+    _components/
+    auditoria/
+    bom-checker/
+    categorias/
+    componentes/
+    localizacoes/
+    movimentacoes/
+    projetos/
+docs/
+public/
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/`: codigo-fonte da aplicacao.
+- `src/app/`: rotas, paginas e layout do App Router.
+- `src/app/_components/`: componentes reutilizaveis ligados a camada `app`.
+- `docs/`: documentacao tecnica e registros de decisao do projeto.
+- `public/`: arquivos publicos estaticos.
 
-## Deploy on Vercel
+## Fora do MVP por enquanto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Autenticacao e controle de usuarios.
+- Integracoes externas.
+- Importacao automatica de fornecedores.
+- Leitura automatica de codigos de barras ou QR codes.
+- Relatorios avancados.
+- Sincronizacao em nuvem.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Esses recursos podem ser avaliados em etapas futuras, depois que o fluxo local principal estiver estavel.
+
+## Dados locais e arquivos sensiveis
+
+O banco local, arquivos `.env`, backups, exportacoes e outros dados sensiveis nao devem ser versionados. Quando forem criados, esses arquivos devem permanecer fora do Git por meio do `.gitignore` ou de outra estrategia equivalente.
