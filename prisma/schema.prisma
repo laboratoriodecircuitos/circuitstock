@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  components  Component[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Location {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  components  Component[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Component {
+  id              String          @id @default(cuid())
+  name            String
+  description     String?
+  categoryId      String
+  locationId      String
+  value           String?
+  unit            String?
+  packageType     String?
+  quantity        Int             @default(0)
+  minimumQuantity Int             @default(0)
+  manufacturer    String?
+  partNumber      String?
+  datasheetUrl    String?
+  purchaseUrl     String?
+  notes           String?
+  category        Category        @relation(fields: [categoryId], references: [id])
+  location        Location        @relation(fields: [locationId], references: [id])
+  stockMovements  StockMovement[]
+  bomItems        BomItem[]       @relation("MatchedComponent")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([name])
+  @@index([partNumber])
+}
+
+model StockMovement {
+  id          String            @id @default(cuid())
+  componentId String
+  component   Component         @relation(fields: [componentId], references: [id])
+  type        StockMovementType
+  quantity    Int
+  reason      String?
+  createdAt   DateTime          @default(now())
+
+  @@index([componentId])
+  @@index([createdAt])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  bomItems    BomItem[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model BomItem {
+  id                 String     @id @default(cuid())
+  projectId          String
+  project            Project    @relation(fields: [projectId], references: [id])
+  componentName      String
+  requiredQuantity   Int
+  matchedComponentId String?
+  matchedComponent   Component? @relation("MatchedComponent", fields: [matchedComponentId], references: [id])
+  notes              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([projectId])
+  @@index([matchedComponentId])
+  @@index([componentName])
+}
+
+enum StockMovementType {
+  ENTRY
+  EXIT
+  ADJUSTMENT
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  FINISHED
+  ARCHIVED
+}
