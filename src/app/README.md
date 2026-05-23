@@ -17,4 +17,4 @@ Esta pasta usa o App Router do Next.js e concentra as rotas, paginas e o layout 
 
 ## Estado atual
 
-A pasta possui o layout visual inicial, dashboard lendo estatisticas reais do banco local, rotas de componentes, categorias e localizacoes consultando dados reais e paginas placeholder para as demais secoes. CRUD, formularios e fluxos completos serao implementados em etapas futuras.
+A pasta possui o layout visual inicial, dashboard lendo estatisticas reais do banco local, rota de componentes com cadastro inicial e listagem, rotas de categorias e localizacoes consultando dados reais e paginas placeholder para as demais secoes. Edicao, exclusao, filtros e fluxos completos serao implementados em etapas futuras.

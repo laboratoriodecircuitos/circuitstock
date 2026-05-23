@@ -1,36 +1,72 @@
 import { connection } from "next/server";
+import { createComponent } from "@/app/componentes/actions";
 import { prisma } from "@/lib/prisma";
 
-async function getComponents() {
+type ComponentesPageProps = {
+  searchParams?: Promise<{
+    created?: string;
+    error?: string;
+  }>;
+};
+
+async function getComponentPageData() {
   await connection();
 
-  return prisma.component.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    select: {
-      id: true,
-      name: true,
-      value: true,
-      packageType: true,
-      quantity: true,
-      minimumQuantity: true,
-      category: {
-        select: {
-          name: true,
+  const [components, categories, locations] = await Promise.all([
+    prisma.component.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        value: true,
+        packageType: true,
+        quantity: true,
+        minimumQuantity: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        location: {
+          select: {
+            name: true,
+          },
         },
       },
-      location: {
-        select: {
-          name: true,
-        },
+    }),
+    prisma.category.findMany({
+      orderBy: {
+        name: "asc",
       },
-    },
-  });
+      select: {
+        id: true,
+        name: true,
+      },
+    }),
+    prisma.location.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    }),
+  ]);
+
+  return { components, categories, locations };
 }
 
-export default async function ComponentesPage() {
-  const components = await getComponents();
+export default async function ComponentesPage({
+  searchParams,
+}: ComponentesPageProps) {
+  const [{ components, categories, locations }, params] = await Promise.all([
+    getComponentPageData(),
+    searchParams,
+  ]);
+
   const lowStockItems = components.filter(
     (component) => component.quantity <= component.minimumQuantity,
   ).length;
@@ -41,6 +77,7 @@ export default async function ComponentesPage() {
   const usedCategories = new Set(
     components.map((component) => component.category.name),
   ).size;
+  const canCreateComponent = categories.length > 0 && locations.length > 0;
 
   const summary = [
     { label: "Total de componentes", value: components.length },
@@ -65,15 +102,27 @@ export default async function ComponentesPage() {
           </p>
         </div>
 
-        <div className="rounded-md border border-dashed border-slate-300 bg-white px-4 py-3 shadow-sm">
+        <div className="rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-            Cadastro futuro
+            Cadastro inicial
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Formulários serão adicionados em etapa posterior.
+            Edição, exclusão e filtros ficam para etapas futuras.
           </p>
         </div>
       </div>
+
+      {(params?.created || params?.error) && (
+        <div
+          className={`mt-6 rounded-md border p-4 text-sm ${
+            params.error
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-emerald-200 bg-emerald-50 text-emerald-700"
+          }`}
+        >
+          {params.error ?? "Componente cadastrado com sucesso."}
+        </div>
+      )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summary.map((item) => (
@@ -89,14 +138,183 @@ export default async function ComponentesPage() {
         ))}
       </div>
 
+      <form
+        action={createComponent}
+        className="mt-6 rounded-md border border-slate-200 bg-white p-6 shadow-sm"
+      >
+        <div className="flex flex-col gap-1 border-b border-slate-200 pb-4">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Novo componente
+          </h2>
+          <p className="text-sm text-slate-600">
+            Cadastre os dados essenciais do componente para iniciar o controle
+            de estoque.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-12">
+          <label className="lg:col-span-4">
+            <span className="text-sm font-medium text-slate-700">Nome</span>
+            <input
+              required
+              name="name"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-4">
+            <span className="text-sm font-medium text-slate-700">
+              Categoria
+            </span>
+            <select
+              required
+              name="categoryId"
+              defaultValue=""
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            >
+              <option value="" disabled>
+                Selecione
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="lg:col-span-4">
+            <span className="text-sm font-medium text-slate-700">
+              Localização
+            </span>
+            <select
+              required
+              name="locationId"
+              defaultValue=""
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            >
+              <option value="" disabled>
+                Selecione
+              </option>
+              {locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="lg:col-span-12">
+            <span className="text-sm font-medium text-slate-700">
+              Descrição
+            </span>
+            <textarea
+              name="description"
+              rows={2}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">Valor</span>
+            <input
+              name="value"
+              type="text"
+              placeholder="10k, 100nF, 5V"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">Unidade</span>
+            <input
+              name="unit"
+              type="text"
+              placeholder="ohm, uF, V"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Encapsulamento
+            </span>
+            <input
+              name="packageType"
+              type="text"
+              placeholder="THT, SMD 0805, DIP"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Quantidade
+            </span>
+            <input
+              required
+              min={0}
+              step={1}
+              name="quantity"
+              type="number"
+              defaultValue={0}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Estoque mínimo
+            </span>
+            <input
+              required
+              min={0}
+              step={1}
+              name="minimumQuantity"
+              type="number"
+              defaultValue={0}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-9">
+            <span className="text-sm font-medium text-slate-700">
+              Observações
+            </span>
+            <input
+              name="notes"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+        </div>
+
+        {!canCreateComponent && (
+          <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Cadastre categorias e localizações antes de criar componentes.
+          </p>
+        )}
+
+        <div className="mt-5 flex justify-end">
+          <button
+            type="submit"
+            disabled={!canCreateComponent}
+            className="rounded-md bg-cyan-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+          >
+            Cadastrar componente
+          </button>
+        </div>
+      </form>
+
       {components.length === 0 ? (
         <div className="mt-6 rounded-md border border-dashed border-slate-300 bg-white p-6">
           <p className="text-sm font-medium text-slate-950">
             Nenhum componente cadastrado ainda.
           </p>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Quando o cadastro for implementado, os componentes aparecerão aqui
-            com categoria, localização, quantidade e estoque mínimo.
+            Quando novos componentes forem cadastrados, eles aparecerão aqui com
+            categoria, localização, quantidade e estoque mínimo.
           </p>
         </div>
       ) : (
