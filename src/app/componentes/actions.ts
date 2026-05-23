@@ -14,6 +14,26 @@ function getOptionalString(formData: FormData, field: string) {
   return value.length > 0 ? value : undefined;
 }
 
+function getOptionalUrl(formData: FormData, field: string) {
+  const value = getOptionalString(formData, field);
+
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return url.toString();
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 function getInteger(formData: FormData, field: string) {
   const value = getString(formData, field);
 
@@ -34,6 +54,8 @@ export async function createComponent(formData: FormData) {
   const locationId = getString(formData, "locationId");
   const quantity = getInteger(formData, "quantity");
   const minimumQuantity = getInteger(formData, "minimumQuantity");
+  const datasheetUrl = getOptionalUrl(formData, "datasheetUrl");
+  const purchaseUrl = getOptionalUrl(formData, "purchaseUrl");
 
   if (!name) {
     redirectWithError("Informe o nome do componente.");
@@ -55,6 +77,14 @@ export async function createComponent(formData: FormData) {
     redirectWithError(
       "O estoque minimo deve ser um numero inteiro maior ou igual a zero.",
     );
+  }
+
+  if (datasheetUrl === null) {
+    redirectWithError("Informe um link de datasheet valido.");
+  }
+
+  if (purchaseUrl === null) {
+    redirectWithError("Informe um link de compra valido.");
   }
 
   const [category, location] = await Promise.all([
@@ -80,6 +110,10 @@ export async function createComponent(formData: FormData) {
         value: getOptionalString(formData, "value"),
         unit: getOptionalString(formData, "unit"),
         packageType: getOptionalString(formData, "packageType"),
+        manufacturer: getOptionalString(formData, "manufacturer"),
+        partNumber: getOptionalString(formData, "partNumber"),
+        datasheetUrl,
+        purchaseUrl,
         quantity,
         minimumQuantity,
         notes: getOptionalString(formData, "notes"),

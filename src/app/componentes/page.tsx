@@ -22,6 +22,10 @@ async function getComponentPageData() {
         name: true,
         value: true,
         packageType: true,
+        manufacturer: true,
+        partNumber: true,
+        datasheetUrl: true,
+        purchaseUrl: true,
         quantity: true,
         minimumQuantity: true,
         category: {
@@ -265,6 +269,52 @@ export default async function ComponentesPage({
 
           <label className="lg:col-span-3">
             <span className="text-sm font-medium text-slate-700">
+              Fabricante
+            </span>
+            <input
+              name="manufacturer"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Part number
+            </span>
+            <input
+              name="partNumber"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Link do datasheet
+            </span>
+            <input
+              name="datasheetUrl"
+              type="url"
+              placeholder="https://..."
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
+              Link de compra
+            </span>
+            <input
+              name="purchaseUrl"
+              type="url"
+              placeholder="https://..."
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-3">
+            <span className="text-sm font-medium text-slate-700">
               Estoque mínimo
             </span>
             <input
@@ -342,6 +392,13 @@ export default async function ComponentesPage({
                 >
                   <h2 className="font-medium text-slate-950 sm:col-span-3">
                     {component.name}
+                    {(component.manufacturer || component.partNumber) && (
+                      <span className="mt-1 block text-xs font-normal text-slate-500">
+                        {[component.manufacturer, component.partNumber]
+                          .filter(Boolean)
+                          .join(" | ")}
+                      </span>
+                    )}
                   </h2>
                   <p className="text-slate-600 sm:col-span-2">
                     {component.category.name}
@@ -372,6 +429,67 @@ export default async function ComponentesPage({
                       {isLowStock ? "Em baixa" : "OK"}
                     </span>
                   </p>
+                  {(component.manufacturer ||
+                    component.partNumber ||
+                    component.datasheetUrl ||
+                    component.purchaseUrl) && (
+                    <dl className="grid gap-3 rounded-md bg-slate-50 p-3 text-xs sm:col-span-12 sm:grid-cols-4">
+                      <div>
+                        <dt className="font-medium uppercase tracking-wide text-slate-500">
+                          Fabricante
+                        </dt>
+                        <dd className="mt-1 text-slate-700">
+                          {component.manufacturer ?? "-"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium uppercase tracking-wide text-slate-500">
+                          Part number
+                        </dt>
+                        <dd className="mt-1 text-slate-700">
+                          {component.partNumber ?? "-"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium uppercase tracking-wide text-slate-500">
+                          Datasheet
+                        </dt>
+                        <dd className="mt-1">
+                          {component.datasheetUrl ? (
+                            <a
+                              href={component.datasheetUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-medium text-cyan-700 hover:text-cyan-800 hover:underline"
+                            >
+                              Abrir link
+                            </a>
+                          ) : (
+                            <span className="text-slate-700">-</span>
+                          )}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium uppercase tracking-wide text-slate-500">
+                          Compra
+                        </dt>
+                        <dd className="mt-1">
+                          {component.purchaseUrl ? (
+                            <a
+                              href={component.purchaseUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-medium text-cyan-700 hover:text-cyan-800 hover:underline"
+                            >
+                              Abrir link
+                            </a>
+                          ) : (
+                            <span className="text-slate-700">-</span>
+                          )}
+                        </dd>
+                      </div>
+                    </dl>
+                  )}
                 </article>
               );
             })}

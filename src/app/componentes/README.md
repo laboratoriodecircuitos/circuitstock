@@ -5,7 +5,7 @@ Rota usada para consultar componentes reais cadastrados no banco local SQLite.
 ## O que colocar aqui
 
 - Paginas e componentes especificos da tela de componentes.
-- Formulario inicial de cadastro de componentes.
+- Formulario inicial de cadastro de componentes, incluindo campos tecnicos opcionais.
 - Consultas de leitura para listar componentes com categoria e localizacao.
 - Estados visuais da listagem e do estado vazio.
 - Filtros e organizacao da consulta, quando forem implementados.
@@ -19,7 +19,9 @@ Rota usada para consultar componentes reais cadastrados no banco local SQLite.
 
 ## Estado atual
 
-A rota consulta o Prisma diretamente em Server Component e permite cadastro inicial de componentes com categoria, localizacao, quantidade, estoque minimo e status de estoque.
+A rota consulta o Prisma diretamente em Server Component e permite cadastro inicial de componentes com categoria, localizacao, quantidade, estoque minimo, status de estoque e campos tecnicos opcionais.
+
+O cadastro contempla fabricante, part number, link do datasheet e link de compra. Esses campos nao sao obrigatorios; quando preenchidos, aparecem na listagem, com datasheet e compra como links clicaveis.
 
 Quando a quantidade inicial e maior que zero, uma movimentacao de estoque do tipo `ENTRY` e registrada automaticamente.
 

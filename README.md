@@ -31,7 +31,7 @@ O projeto usa uma stack local com SQLite e ainda nao possui autenticacao.
 
 ## Status do desenvolvimento
 
-O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, listagens reais de categorias e localizacoes, listagem de componentes e cadastro inicial de componentes.
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, listagens reais de categorias e localizacoes, listagem de componentes e cadastro inicial de componentes com campos tecnicos opcionais.
 
 O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed inicial de categorias e localizacoes.
 
