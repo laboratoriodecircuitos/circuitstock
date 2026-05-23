@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { DeleteComponentButton } from "@/app/componentes/_components/delete-component-button";
 import { createComponent } from "@/app/componentes/actions";
 import { prisma } from "@/lib/prisma";
 
@@ -7,6 +8,7 @@ type ComponentesPageProps = {
   searchParams?: Promise<{
     created?: string;
     updated?: string;
+    deleted?: string;
     error?: string;
   }>;
 };
@@ -113,12 +115,12 @@ export default async function ComponentesPage({
             Cadastro inicial
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Exclusao, filtros e movimentacoes ficam para etapas futuras.
+            Exclusao segura bloqueia itens com historico de estoque.
           </p>
         </div>
       </div>
 
-      {(params?.created || params?.updated || params?.error) && (
+      {(params?.created || params?.updated || params?.deleted || params?.error) && (
         <div
           className={`mt-6 rounded-md border p-4 text-sm ${
             params.error
@@ -129,7 +131,9 @@ export default async function ComponentesPage({
           {params.error ??
             (params.updated
               ? "Componente atualizado com sucesso."
-              : "Componente cadastrado com sucesso.")}
+              : params.deleted
+                ? "Componente excluido com sucesso."
+                : "Componente cadastrado com sucesso.")}
         </div>
       )}
 
@@ -495,13 +499,17 @@ export default async function ComponentesPage({
                       </div>
                     </dl>
                   )}
-                  <div className="flex justify-end sm:col-span-12">
+                  <div className="flex flex-wrap justify-end gap-2 sm:col-span-12">
                     <Link
                       href={`/componentes/${component.id}/editar`}
                       className="inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
                     >
                       Editar
                     </Link>
+                    <DeleteComponentButton
+                      componentId={component.id}
+                      componentName={component.name}
+                    />
                   </div>
                 </article>
               );

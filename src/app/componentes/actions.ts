@@ -224,3 +224,49 @@ export async function updateComponent(formData: FormData) {
   revalidatePath("/");
   redirect("/componentes?updated=1");
 }
+
+export async function deleteComponent(formData: FormData) {
+  const id = getString(formData, "id");
+  const confirmed = getString(formData, "confirmed");
+
+  if (!id) {
+    redirectWithError("Informe o componente que sera excluido.");
+  }
+
+  if (confirmed !== "1") {
+    redirectWithError("Confirme a exclusao antes de continuar.");
+  }
+
+  const component = await prisma.component.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!component) {
+    redirectWithError("O componente selecionado nao foi encontrado.");
+  }
+
+  const stockMovementCount = await prisma.stockMovement.count({
+    where: { componentId: id },
+  });
+
+  if (stockMovementCount > 0) {
+    redirectWithError(
+      "Exclusao bloqueada: este componente possui historico de movimentacoes.",
+    );
+  }
+
+  try {
+    await prisma.component.delete({
+      where: { id },
+    });
+  } catch {
+    redirectWithError(
+      "Nao foi possivel excluir o componente sem uma politica clara para os dados relacionados.",
+    );
+  }
+
+  revalidatePath("/componentes");
+  revalidatePath("/");
+  redirect("/componentes?deleted=1");
+}
