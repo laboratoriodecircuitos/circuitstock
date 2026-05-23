@@ -12,6 +12,8 @@ A serie 0.x cobre a criacao, estruturacao e fundacao do CircuitStock.
 
 O foco desta serie e construir uma base solida para o produto: stack, layout, dados locais, primeiras telas reais, primeiros fluxos e documentacao. A serie 0.x inclui evolucoes como:
 
+Marco atual: `0.5.0` - Fundacao com cadastro inicial de componentes.
+
 - Next.js com App Router.
 - TypeScript.
 - Tailwind CSS.

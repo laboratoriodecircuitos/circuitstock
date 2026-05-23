@@ -8,6 +8,8 @@ O CircuitStock tem como objetivo substituir controles em planilhas e centralizar
 
 O projeto esta em evolucao continua. A serie 0.x consolida a fundacao do produto, com estrutura, dados locais, primeiras telas reais, fluxos iniciais e documentacao para sustentar as proximas etapas.
 
+Versao atual: `0.5.0` - marco 0.5.0, Fundacao com cadastro inicial de componentes.
+
 Perguntas centrais do sistema:
 
 1. O que eu tenho?
@@ -39,6 +41,7 @@ Ainda nao ha CRUD completo, auditoria funcional, movimentacoes implementadas ou 
 
 - [Visao do Produto](docs/produto/VISAO_DO_PRODUTO.md)
 - [Roadmap CircuitStock](docs/roadmap/ROADMAP_CIRCUITSTOCK.md)
+- [Changelog](CHANGELOG.md)
 
 ## Como rodar localmente
 
