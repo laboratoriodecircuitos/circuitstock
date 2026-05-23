@@ -48,6 +48,12 @@ function redirectWithError(message: string): never {
   redirect(`/componentes?error=${encodeURIComponent(message)}`);
 }
 
+function redirectEditWithError(id: string, message: string): never {
+  redirect(
+    `/componentes/${encodeURIComponent(id)}/editar?error=${encodeURIComponent(message)}`,
+  );
+}
+
 export async function createComponent(formData: FormData) {
   const name = getString(formData, "name");
   const categoryId = getString(formData, "categoryId");
@@ -135,4 +141,86 @@ export async function createComponent(formData: FormData) {
   revalidatePath("/componentes");
   revalidatePath("/");
   redirect("/componentes?created=1");
+}
+
+export async function updateComponent(formData: FormData) {
+  const id = getString(formData, "id");
+  const name = getString(formData, "name");
+  const categoryId = getString(formData, "categoryId");
+  const locationId = getString(formData, "locationId");
+  const minimumQuantity = getInteger(formData, "minimumQuantity");
+  const datasheetUrl = getOptionalUrl(formData, "datasheetUrl");
+  const purchaseUrl = getOptionalUrl(formData, "purchaseUrl");
+
+  if (!id) {
+    redirectWithError("Informe o componente que sera editado.");
+  }
+
+  if (!name) {
+    redirectEditWithError(id, "Informe o nome do componente.");
+  }
+
+  if (!categoryId) {
+    redirectEditWithError(id, "Selecione uma categoria.");
+  }
+
+  if (!locationId) {
+    redirectEditWithError(id, "Selecione uma localizacao.");
+  }
+
+  if (minimumQuantity === null) {
+    redirectEditWithError(
+      id,
+      "O estoque minimo deve ser um numero inteiro maior ou igual a zero.",
+    );
+  }
+
+  if (datasheetUrl === null) {
+    redirectEditWithError(id, "Informe um link de datasheet valido.");
+  }
+
+  if (purchaseUrl === null) {
+    redirectEditWithError(id, "Informe um link de compra valido.");
+  }
+
+  const [component, category, location] = await Promise.all([
+    prisma.component.findUnique({ where: { id } }),
+    prisma.category.findUnique({ where: { id: categoryId } }),
+    prisma.location.findUnique({ where: { id: locationId } }),
+  ]);
+
+  if (!component) {
+    redirectWithError("O componente selecionado nao foi encontrado.");
+  }
+
+  if (!category) {
+    redirectEditWithError(id, "A categoria selecionada nao foi encontrada.");
+  }
+
+  if (!location) {
+    redirectEditWithError(id, "A localizacao selecionada nao foi encontrada.");
+  }
+
+  await prisma.component.update({
+    where: { id },
+    data: {
+      name,
+      description: getOptionalString(formData, "description"),
+      categoryId,
+      locationId,
+      value: getOptionalString(formData, "value"),
+      unit: getOptionalString(formData, "unit"),
+      packageType: getOptionalString(formData, "packageType"),
+      minimumQuantity,
+      manufacturer: getOptionalString(formData, "manufacturer"),
+      partNumber: getOptionalString(formData, "partNumber"),
+      datasheetUrl,
+      purchaseUrl,
+      notes: getOptionalString(formData, "notes"),
+    },
+  });
+
+  revalidatePath("/componentes");
+  revalidatePath("/");
+  redirect("/componentes?updated=1");
 }

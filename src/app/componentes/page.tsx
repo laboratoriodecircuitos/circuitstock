@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { connection } from "next/server";
 import { createComponent } from "@/app/componentes/actions";
 import { prisma } from "@/lib/prisma";
@@ -5,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 type ComponentesPageProps = {
   searchParams?: Promise<{
     created?: string;
+    updated?: string;
     error?: string;
   }>;
 };
@@ -111,12 +113,12 @@ export default async function ComponentesPage({
             Cadastro inicial
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Edição, exclusão e filtros ficam para etapas futuras.
+            Exclusao, filtros e movimentacoes ficam para etapas futuras.
           </p>
         </div>
       </div>
 
-      {(params?.created || params?.error) && (
+      {(params?.created || params?.updated || params?.error) && (
         <div
           className={`mt-6 rounded-md border p-4 text-sm ${
             params.error
@@ -124,7 +126,10 @@ export default async function ComponentesPage({
               : "border-emerald-200 bg-emerald-50 text-emerald-700"
           }`}
         >
-          {params.error ?? "Componente cadastrado com sucesso."}
+          {params.error ??
+            (params.updated
+              ? "Componente atualizado com sucesso."
+              : "Componente cadastrado com sucesso.")}
         </div>
       )}
 
@@ -490,6 +495,14 @@ export default async function ComponentesPage({
                       </div>
                     </dl>
                   )}
+                  <div className="flex justify-end sm:col-span-12">
+                    <Link
+                      href={`/componentes/${component.id}/editar`}
+                      className="inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
+                    >
+                      Editar
+                    </Link>
+                  </div>
                 </article>
               );
             })}
