@@ -1,16 +1,19 @@
 # CircuitStock
 
-Sistema local de inventario, auditoria e consulta de componentes eletronicos para laboratorio.
+Produto local de inventario, auditoria e gestao de componentes eletronicos para laboratorio.
 
 ## Objetivo
 
-O CircuitStock tem como objetivo substituir controles em planilhas e centralizar informacoes importantes sobre componentes eletronicos: o que existe no estoque, onde cada item esta guardado e se a quantidade disponivel atende a um projeto.
+O CircuitStock tem como objetivo substituir controles em planilhas e centralizar informacoes importantes sobre componentes eletronicos: o que existe no estoque, onde cada item esta guardado, qual a disponibilidade real e se a quantidade disponivel atende a um projeto.
 
-Principio central do sistema:
+O projeto esta em evolucao continua. A serie 0.x consolida a fundacao do produto, com estrutura, dados locais, primeiras telas reais, fluxos iniciais e documentacao para sustentar as proximas etapas.
+
+Perguntas centrais do sistema:
 
 1. O que eu tenho?
 2. Onde esta?
-3. Isso e suficiente para montar este projeto?
+3. Esta disponivel?
+4. Isso e suficiente para montar este projeto?
 
 ## Stack atual
 
@@ -22,15 +25,20 @@ Principio central do sistema:
 - ESLint
 - Estrutura com `src/`
 
-O projeto usa uma stack local e nao possui autenticacao no MVP.
+O projeto usa uma stack local com SQLite e ainda nao possui autenticacao.
 
 ## Status do desenvolvimento
 
-O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, cadastro inicial e listagem de componentes, listagens reais de categorias e localizacoes, e paginas placeholder para as demais areas do sistema.
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, listagens reais de categorias e localizacoes, listagem de componentes e cadastro inicial de componentes.
 
-O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed basico de categorias e localizacoes.
+O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed inicial de categorias e localizacoes.
 
-Ainda nao ha CRUD, formularios de cadastro, auditoria funcional ou BOM Checker implementado.
+Ainda nao ha CRUD completo, auditoria funcional, movimentacoes implementadas ou BOM Checker implementado.
+
+## Documentacao de produto
+
+- [Visao do Produto](docs/produto/VISAO_DO_PRODUTO.md)
+- [Roadmap CircuitStock](docs/roadmap/ROADMAP_CIRCUITSTOCK.md)
 
 ## Como rodar localmente
 
@@ -99,7 +107,7 @@ public/
 - `docs/`: documentacao tecnica e registros de decisao do projeto.
 - `public/`: arquivos publicos estaticos.
 
-## Fora do MVP por enquanto
+## Fora da fundacao atual
 
 - Autenticacao e controle de usuarios.
 - Integracoes externas.
@@ -108,7 +116,7 @@ public/
 - Relatorios avancados.
 - Sincronizacao em nuvem.
 
-Esses recursos podem ser avaliados em etapas futuras, depois que o fluxo local principal estiver estavel.
+Esses recursos podem ser avaliados em series futuras, depois que o fluxo local principal estiver estavel.
 
 ## Dados locais e arquivos sensiveis
 
