@@ -31,11 +31,11 @@ O projeto usa uma stack local com SQLite e ainda nao possui autenticacao.
 
 ## Status do desenvolvimento
 
-O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, listagens reais de categorias e localizacoes, listagem de componentes com busca e filtros, cadastro inicial de componentes com campos tecnicos opcionais, edicao segura de dados descritivos e tecnicos e exclusao segura de componentes sem historico de movimentacoes.
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard com estatisticas reais do banco local, listagens reais de categorias e localizacoes, listagem de componentes com busca e filtros, cadastro inicial de componentes com campos tecnicos opcionais, edicao segura de dados descritivos e tecnicos, exclusao segura de componentes sem historico de movimentacoes e registro manual de entradas, saidas e ajustes de estoque.
 
 O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed inicial de categorias e localizacoes.
 
-Ainda nao ha auditoria funcional, movimentacoes manuais ou BOM Checker implementado. A quantidade atual de componentes nao e editada diretamente; ajustes de estoque serao tratados por movimentacoes em etapa futura. Componentes com historico de movimentacoes nao podem ser excluidos nesta etapa, para preservar rastreabilidade.
+Ainda nao ha auditoria funcional ou BOM Checker implementado. A quantidade atual de componentes nao e editada diretamente no cadastro/edicao; ajustes de estoque sao tratados por movimentacoes manuais com historico. Componentes com historico de movimentacoes nao podem ser excluidos nesta etapa, para preservar rastreabilidade.
 
 ## Documentacao de produto
 
