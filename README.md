@@ -43,6 +43,10 @@ Ainda nao ha BOM Checker implementado. A quantidade atual de componentes nao e e
 - [Roadmap CircuitStock](docs/roadmap/ROADMAP_CIRCUITSTOCK.md)
 - [Changelog](CHANGELOG.md)
 
+## Referencia visual
+
+A referencia visual oficial v1 criada no Google Stitch esta preservada em [design-reference/google-stitch-v1](design-reference/google-stitch-v1/). Ela ainda nao foi aplicada ao front e sera usada em etapa futura para orientar o refinamento visual do CircuitStock.
+
 ## Como rodar localmente
 
 Instale as dependencias:

@@ -6,6 +6,7 @@ Esta pasta concentrara a documentacao tecnica e de produto do CircuitStock.
 
 - [Visao do Produto](produto/VISAO_DO_PRODUTO.md)
 - [Roadmap CircuitStock](roadmap/ROADMAP_CIRCUITSTOCK.md)
+- [Referencia visual Google Stitch v1](../design-reference/google-stitch-v1/)
 
 ## O que colocar aqui
 
@@ -16,6 +17,7 @@ Esta pasta concentrara a documentacao tecnica e de produto do CircuitStock.
 - Notas sobre seeds e dados iniciais de desenvolvimento.
 - Registros de auditoria tecnica do projeto.
 - Guias de manutencao e operacao.
+- Referencias visuais aprovadas para orientar refinamentos futuros.
 
 ## O que evitar
 

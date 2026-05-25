@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CircuitStock - Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;450;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "tertiary": "#924700",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#f2f3fd",
+                        "background": "#f9f9ff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-primary-container": "#fefcff",
+                        "inverse-primary": "#adc6ff",
+                        "on-background": "#191b23",
+                        "surface-dim": "#d8d9e3",
+                        "surface-container-highest": "#e1e2ec",
+                        "tertiary-fixed": "#ffdcc6",
+                        "inverse-on-surface": "#eff0fa",
+                        "surface-tint": "#005ac2",
+                        "primary": "#0058be",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary-fixed-variant": "#004395",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e7f2",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e2ec",
+                        "inverse-surface": "#2e3038",
+                        "on-tertiary-fixed": "#311400",
+                        "secondary": "#505f76",
+                        "surface-container": "#ecedf7",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-fixed": "#001a42",
+                        "outline": "#727785",
+                        "on-secondary-container": "#54647a",
+                        "on-tertiary-container": "#fffbff",
+                        "outline-variant": "#c2c6d6",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-container": "#b75b00",
+                        "on-surface": "#191b23",
+                        "on-surface-variant": "#424754",
+                        "surface": "#f9f9ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary-container": "#2170e4",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-gap": "12px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["JetBrains Mono"],
+                        "label-caps": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "display": ["Geist"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["13px", { "lineHeight": "18px", "fontWeight": "450" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex">
+<!-- SideNavBar Component -->
+<nav class="fixed left-0 top-0 h-full w-sidebar-width bg-inverse-surface dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows flex flex-col h-full py-gutter z-20">
+<!-- Brand/Header -->
+<div class="px-gutter mb-8 flex flex-col gap-unit">
+<span class="font-headline-sm text-headline-sm font-bold text-surface-container-lowest dark:text-primary">CircuitStock</span>
+<span class="font-label-caps text-label-caps text-surface-variant opacity-80">Gestão de Inventário</span>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex flex-col gap-unit flex-1 px-unit">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-primary-fixed bg-on-secondary-fixed-variant/20 font-bold border-l-4 border-primary-fixed transition-opacity duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md text-label-caps">Dashboard</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md text-label-caps">Componentes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="font-body-md text-body-md text-label-caps">Categorias</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="font-body-md text-body-md text-label-caps">Localizações</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-body-md text-body-md text-label-caps">Movimentações</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-md text-body-md text-label-caps">Auditoria</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">architecture</span>
+<span class="font-body-md text-body-md text-label-caps">Projetos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">checklist</span>
+<span class="font-body-md text-body-md text-label-caps">BOM Checker</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT border-l-4 border-transparent text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md text-label-caps">Configurações</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="flex flex-col gap-unit mt-auto px-unit pt-4 border-t border-surface-variant/20">
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200 border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-md text-body-md text-label-caps">Suporte</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-surface-variant opacity-80 font-normal hover:opacity-100 hover:bg-secondary-container/10 transition-all duration-200 border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md text-label-caps">Sair</span>
+</a>
+</div>
+</nav>
+<!-- Main Canvas Area -->
+<div class="flex-1 ml-[260px] flex flex-col min-h-screen">
+<!-- TopAppBar Component -->
+<header class="fixed top-0 right-0 left-[260px] h-16 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline flat no shadows flex items-center justify-between px-gutter w-[calc(100%-260px)] z-10">
+<!-- Search Bar on Left -->
+<div class="flex-1 max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all rounded-DEFAULT bg-surface-container-low border border-outline-variant/50 flex items-center px-3 py-1.5 gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-transparent border-none outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/60 focus:ring-0 p-0" placeholder="Buscar componentes, PNs..." type="text"/>
+</div>
+<!-- Trailing Icons & Profile -->
+<div class="flex items-center gap-4 ml-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-inverse-surface cursor-pointer transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-inverse-surface cursor-pointer transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">help_center</span>
+</button>
+</div>
+<div class="w-px h-6 bg-outline-variant/50"></div>
+<button class="flex items-center gap-2 hover:bg-surface-container-high dark:hover:bg-inverse-surface cursor-pointer p-1.5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<main class="mt-16 p-container-margin flex flex-col gap-container-margin w-full max-w-screen-2xl mx-auto">
+<!-- Quick Actions Bar -->
+<div class="flex items-center gap-stack-gap">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-DEFAULT font-label-caps text-label-caps hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Novo Componente
+                </button>
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-2 rounded-DEFAULT font-label-caps text-label-caps hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">category</span>
+                    Nova Categoria
+                </button>
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-2 rounded-DEFAULT font-label-caps text-label-caps hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                    Nova Localização
+                </button>
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-2 rounded-DEFAULT font-label-caps text-label-caps hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">architecture</span>
+                    Criar Projeto
+                </button>
+</div>
+<!-- Summary Cards Grid -->
+<div class="grid grid-cols-12 gap-container-margin">
+<!-- Card 1 -->
+<div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter flex flex-col gap-unit relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Total de Componentes</span>
+<span class="material-symbols-outlined text-primary/80">memory</span>
+</div>
+<div class="font-display text-display text-on-surface mt-2">14.285</div>
+<div class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">arrow_upward</span>
+                        +124 esta semana
+                    </div>
+</div>
+<!-- Card 2 -->
+<div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter flex flex-col gap-unit relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Categorias</span>
+<span class="material-symbols-outlined text-secondary/80">category</span>
+</div>
+<div class="font-display text-display text-on-surface mt-2">52</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">
+                        Ativas no sistema
+                    </div>
+</div>
+<!-- Card 3 (Critical) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter flex flex-col gap-unit relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Estoque Baixo</span>
+<span class="material-symbols-outlined text-error/80">warning</span>
+</div>
+<div class="font-display text-display text-error mt-2">87</div>
+<div class="font-body-md text-body-md text-error flex items-center gap-1 mt-1">
+                        Abaixo do nível mínimo
+                    </div>
+</div>
+<!-- Card 4 -->
+<div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter flex flex-col gap-unit relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary-container"></div>
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Projetos Ativos</span>
+<span class="material-symbols-outlined text-tertiary-container/80">architecture</span>
+</div>
+<div class="font-display text-display text-on-surface mt-2">14</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">
+                        Em fase de montagem
+                    </div>
+</div>
+</div>
+<!-- Middle Section: Chart & Low Stock Table -->
+<div class="grid grid-cols-12 gap-container-margin">
+<!-- Stock Health Indicator (Bento style) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-outline-variant pb-2">Saúde do Estoque</h2>
+<div class="flex-1 flex flex-col justify-center gap-6">
+<!-- Progress Bar Data Visualizations -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-data-mono text-data-mono">
+<span class="text-on-surface flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary inline-block"></span> Saudável</span>
+<span class="text-on-surface-variant text-right">85% (12.142 itens)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 85%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-data-mono text-data-mono">
+<span class="text-on-surface flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary inline-block"></span> Atenção (Baixo)</span>
+<span class="text-on-surface-variant text-right">10% (1.428 itens)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 10%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-data-mono text-data-mono">
+<span class="text-on-surface flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error inline-block"></span> Crítico</span>
+<span class="text-on-surface-variant text-right">5% (715 itens)</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error" style="width: 5%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Itens em Baixa Table -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col overflow-hidden">
+<div class="p-gutter border-b border-outline-variant flex justify-between items-center bg-surface/50">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+                            Itens em Baixa
+                        </h2>
+<button class="font-label-caps text-label-caps text-primary hover:underline">Ver Todos</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50 border-b border-outline-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Part Number</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Descrição</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold text-right">Qtd Atual</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold text-right">Mínimo</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold text-center">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors">
+<td class="px-4 py-2.5 text-primary-container font-medium">STM32F405RGT6</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Microcontrolador ARM Cortex-M4</td>
+<td class="px-4 py-2.5 text-right text-error font-semibold">12</td>
+<td class="px-4 py-2.5 text-right text-on-surface-variant">50</td>
+<td class="px-4 py-2.5 text-center">
+<span class="inline-flex items-center gap-1 bg-error-container text-on-error-container px-2 py-0.5 rounded-sm font-label-caps text-[10px]">
+<span class="material-symbols-outlined text-[12px]">error</span> Crítico
+                                        </span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors bg-surface-container-lowest">
+<td class="px-4 py-2.5 text-primary-container font-medium">LM358DT</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Amplificador Operacional Duplo</td>
+<td class="px-4 py-2.5 text-right text-tertiary font-semibold">45</td>
+<td class="px-4 py-2.5 text-right text-on-surface-variant">100</td>
+<td class="px-4 py-2.5 text-center">
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-sm font-label-caps text-[10px]">
+<span class="material-symbols-outlined text-[12px]">warning</span> Baixo
+                                        </span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors">
+<td class="px-4 py-2.5 text-primary-container font-medium">CC0805KRX7R9BB104</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Capacitor Cerâmico 100nF 50V 0805</td>
+<td class="px-4 py-2.5 text-right text-tertiary font-semibold">850</td>
+<td class="px-4 py-2.5 text-right text-on-surface-variant">1000</td>
+<td class="px-4 py-2.5 text-center">
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-sm font-label-caps text-[10px]">
+<span class="material-symbols-outlined text-[12px]">warning</span> Baixo
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/80 transition-colors bg-surface-container-lowest">
+<td class="px-4 py-2.5 text-primary-container font-medium">ESP32-WROOM-32D</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Módulo Wi-Fi/Bluetooth</td>
+<td class="px-4 py-2.5 text-right text-error font-semibold">4</td>
+<td class="px-4 py-2.5 text-right text-on-surface-variant">20</td>
+<td class="px-4 py-2.5 text-center">
+<span class="inline-flex items-center gap-1 bg-error-container text-on-error-container px-2 py-0.5 rounded-sm font-label-caps text-[10px]">
+<span class="material-symbols-outlined text-[12px]">error</span> Crítico
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Últimos Adicionados Table -->
+<div class="col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col overflow-hidden mb-8">
+<div class="p-gutter border-b border-outline-variant flex justify-between items-center bg-surface/50">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">history</span>
+                        Últimos Componentes Adicionados
+                    </h2>
+<div class="flex gap-2">
+<button class="p-1 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">filter_list</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50 border-b border-outline-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Part Number / ID</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Categoria</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Data/Hora</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold text-right">Qtd Adicionada</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase font-semibold">Responsável</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors">
+<td class="px-4 py-2.5 text-primary-container font-medium flex items-center gap-2">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[16px]">memory</span></span>
+                                    ATMEGA328P-AU
+                                </td>
+<td class="px-4 py-2.5 text-on-surface-variant">Microcontroladores</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Hoje, 14:32</td>
+<td class="px-4 py-2.5 text-right font-semibold text-on-surface">+500</td>
+<td class="px-4 py-2.5 text-on-surface-variant">João Silva</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors bg-surface-container-lowest">
+<td class="px-4 py-2.5 text-primary-container font-medium flex items-center gap-2">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[16px]">cable</span></span>
+                                    RC0402JR-0710KL
+                                </td>
+<td class="px-4 py-2.5 text-on-surface-variant">Resistores SMD</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Hoje, 11:15</td>
+<td class="px-4 py-2.5 text-right font-semibold text-on-surface">+10000</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Maria Souza</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest/80 transition-colors">
+<td class="px-4 py-2.5 text-primary-container font-medium flex items-center gap-2">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[16px]">electrical_services</span></span>
+                                    SS14-E3/61T
+                                </td>
+<td class="px-4 py-2.5 text-on-surface-variant">Semicondutores / Diodos</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Ontem, 16:45</td>
+<td class="px-4 py-2.5 text-right font-semibold text-on-surface">+2500</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Carlos Mendes</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/80 transition-colors bg-surface-container-lowest">
+<td class="px-4 py-2.5 text-primary-container font-medium flex items-center gap-2">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[16px]">conveyor_belt</span></span>
+                                    HDR-1x40-Male
+                                </td>
+<td class="px-4 py-2.5 text-on-surface-variant">Conectores</td>
+<td class="px-4 py-2.5 text-on-surface-variant">Ontem, 09:20</td>
+<td class="px-4 py-2.5 text-right font-semibold text-on-surface">+200</td>
+<td class="px-4 py-2.5 text-on-surface-variant">João Silva</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</body></html>
