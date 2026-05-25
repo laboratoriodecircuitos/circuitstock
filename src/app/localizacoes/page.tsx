@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { connection } from "next/server";
+import { DeleteLocationButton } from "@/app/localizacoes/_components/delete-location-button";
+import { createLocation } from "@/app/localizacoes/actions";
 import { prisma } from "@/lib/prisma";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -6,6 +9,22 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   month: "2-digit",
   year: "numeric",
 });
+
+type LocalizacoesSearchParams = {
+  created?: string | string[];
+  updated?: string | string[];
+  deleted?: string | string[];
+  error?: string | string[];
+};
+
+type LocalizacoesPageProps = {
+  searchParams?: Promise<LocalizacoesSearchParams>;
+};
+
+function getSingleParam(value: string | string[] | undefined) {
+  const firstValue = Array.isArray(value) ? value[0] : value;
+  return typeof firstValue === "string" ? firstValue.trim() : "";
+}
 
 async function getLocations() {
   await connection();
@@ -29,8 +48,16 @@ async function getLocations() {
   });
 }
 
-export default async function LocalizacoesPage() {
-  const locations = await getLocations();
+export default async function LocalizacoesPage({
+  searchParams,
+}: LocalizacoesPageProps) {
+  const [locations, params] = await Promise.all([getLocations(), searchParams]);
+  const feedback = {
+    created: getSingleParam(params?.created),
+    updated: getSingleParam(params?.updated),
+    deleted: getSingleParam(params?.deleted),
+    error: getSingleParam(params?.error),
+  };
   const totalLocations = locations.length;
 
   return (
@@ -41,11 +68,11 @@ export default async function LocalizacoesPage() {
             Inventario
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
-            Localizações
+            Localizacoes
           </h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">
             Controle onde cada componente fica guardado para facilitar busca,
-            auditoria e reposição.
+            auditoria e reposicao.
           </p>
         </div>
 
@@ -59,23 +86,91 @@ export default async function LocalizacoesPage() {
         </div>
       </div>
 
+      {(feedback.created ||
+        feedback.updated ||
+        feedback.deleted ||
+        feedback.error) && (
+        <div
+          className={`mt-6 rounded-md border p-4 text-sm ${
+            feedback.error
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-emerald-200 bg-emerald-50 text-emerald-700"
+          }`}
+        >
+          {feedback.error ||
+            (feedback.updated
+              ? "Localizacao atualizada com sucesso."
+              : feedback.deleted
+                ? "Localizacao excluida com sucesso."
+                : "Localizacao criada com sucesso.")}
+        </div>
+      )}
+
+      <form
+        action={createLocation}
+        className="mt-6 rounded-md border border-slate-200 bg-white p-6 shadow-sm"
+      >
+        <div className="flex flex-col gap-1 border-b border-slate-200 pb-4">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Nova localizacao
+          </h2>
+          <p className="text-sm text-slate-600">
+            Cadastre locais fisicos para indicar onde os componentes estao
+            armazenados.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-12">
+          <label className="lg:col-span-4">
+            <span className="text-sm font-medium text-slate-700">Nome</span>
+            <input
+              required
+              name="name"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-8">
+            <span className="text-sm font-medium text-slate-700">
+              Descricao
+            </span>
+            <input
+              name="description"
+              type="text"
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+        </div>
+
+        <div className="mt-5 flex justify-end">
+          <button
+            type="submit"
+            className="rounded-md bg-cyan-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-800"
+          >
+            Criar localizacao
+          </button>
+        </div>
+      </form>
+
       {locations.length === 0 ? (
         <div className="mt-6 rounded-md border border-dashed border-slate-300 bg-white p-6">
           <p className="text-sm font-medium text-slate-950">
-            Nenhuma localização cadastrada
+            Nenhuma localizacao cadastrada
           </p>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            As localizações iniciais podem ser carregadas pelo seed do banco
+            As localizacoes iniciais podem ser carregadas pelo seed do banco
             local.
           </p>
         </div>
       ) : (
         <div className="mt-6 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
           <div className="grid grid-cols-12 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500">
-            <span className="col-span-5">Localização</span>
-            <span className="col-span-3">Descrição</span>
+            <span className="col-span-4">Localizacao</span>
+            <span className="col-span-3">Descricao</span>
             <span className="col-span-2 text-right">Componentes</span>
             <span className="col-span-2 text-right">Atualizada em</span>
+            <span className="col-span-1 text-right">Acoes</span>
           </div>
 
           <div className="divide-y divide-slate-200">
@@ -84,7 +179,7 @@ export default async function LocalizacoesPage() {
                 key={location.id}
                 className="grid grid-cols-1 gap-3 px-4 py-4 text-sm sm:grid-cols-12 sm:items-center"
               >
-                <div className="sm:col-span-5">
+                <div className="sm:col-span-4">
                   <h2 className="font-medium text-slate-950">
                     {location.name}
                   </h2>
@@ -94,7 +189,7 @@ export default async function LocalizacoesPage() {
                 </div>
 
                 <p className="text-slate-600 sm:col-span-3">
-                  {location.description ?? "Sem descrição cadastrada"}
+                  {location.description ?? "Sem descricao cadastrada"}
                 </p>
 
                 <p className="font-medium text-slate-950 sm:col-span-2 sm:text-right">
@@ -104,6 +199,19 @@ export default async function LocalizacoesPage() {
                 <p className="text-slate-500 sm:col-span-2 sm:text-right">
                   {dateFormatter.format(location.updatedAt)}
                 </p>
+
+                <div className="flex flex-wrap justify-end gap-2 sm:col-span-1">
+                  <Link
+                    href={`/localizacoes/${location.id}/editar`}
+                    className="inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
+                  >
+                    Editar
+                  </Link>
+                  <DeleteLocationButton
+                    locationId={location.id}
+                    locationName={location.name}
+                  />
+                </div>
               </article>
             ))}
           </div>
