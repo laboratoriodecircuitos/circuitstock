@@ -10,7 +10,7 @@ Rota usada para consultar componentes reais cadastrados no banco local SQLite.
 - Acao visual de exclusao segura, com confirmacao antes de executar.
 - Consultas de leitura para listar componentes com categoria e localizacao.
 - Estados visuais da listagem e do estado vazio.
-- Filtros e organizacao da consulta, quando forem implementados.
+- Busca e filtros da consulta por query string.
 
 ## O que evitar
 
@@ -25,6 +25,8 @@ Rota usada para consultar componentes reais cadastrados no banco local SQLite.
 
 A rota consulta o Prisma diretamente em Server Component e permite cadastro inicial de componentes com categoria, localizacao, quantidade, estoque minimo, status de estoque e campos tecnicos opcionais.
 
+A listagem possui busca e filtros via query string, executados no servidor com Prisma. A busca textual cobre `name`, `description`, `value`, `unit`, `packageType`, `manufacturer`, `partNumber` e `notes`. Tambem ha filtros por `categoryId`, `locationId` e status de estoque. O status segue a regra atual: `Em baixa` quando `quantity <= minimumQuantity` e `OK` quando `quantity > minimumQuantity`.
+
 O cadastro contempla fabricante, part number, link do datasheet e link de compra. Esses campos nao sao obrigatorios; quando preenchidos, aparecem na listagem, com datasheet e compra como links clicaveis.
 
 Quando a quantidade inicial e maior que zero, uma movimentacao de estoque do tipo `ENTRY` e registrada automaticamente.
@@ -35,4 +37,4 @@ A quantidade atual aparece apenas como informacao de leitura na tela de edicao. 
 
 A rota permite excluir componentes diretamente pela listagem, sempre com confirmacao visual antes do envio. A exclusao e bloqueada quando o componente possui qualquer `StockMovement` associado, preservando o historico de estoque. Quando nao ha historico, apenas o `Component` e removido.
 
-Ainda nao ha busca, filtros avancados ou movimentacoes manuais.
+Ainda nao ha movimentacoes manuais.

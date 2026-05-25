@@ -2,22 +2,113 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { DeleteComponentButton } from "@/app/componentes/_components/delete-component-button";
 import { createComponent } from "@/app/componentes/actions";
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
-type ComponentesPageProps = {
-  searchParams?: Promise<{
-    created?: string;
-    updated?: string;
-    deleted?: string;
-    error?: string;
-  }>;
+type StockStatusFilter = "ok" | "low";
+
+type ComponentesSearchParams = {
+  q?: string | string[];
+  categoryId?: string | string[];
+  locationId?: string | string[];
+  stockStatus?: string | string[];
+  created?: string | string[];
+  updated?: string | string[];
+  deleted?: string | string[];
+  error?: string | string[];
 };
 
-async function getComponentPageData() {
+type ComponentesPageProps = {
+  searchParams?: Promise<ComponentesSearchParams>;
+};
+
+type ComponentFilters = {
+  query: string;
+  categoryId: string;
+  locationId: string;
+  stockStatus: StockStatusFilter | "";
+};
+
+function getSingleParam(value: string | string[] | undefined) {
+  const firstValue = Array.isArray(value) ? value[0] : value;
+  return typeof firstValue === "string" ? firstValue.trim() : "";
+}
+
+function normalizeStockStatus(value: string) {
+  return value === "ok" || value === "low" ? value : "";
+}
+
+function getFilters(params?: ComponentesSearchParams): ComponentFilters {
+  return {
+    query: getSingleParam(params?.q),
+    categoryId: getSingleParam(params?.categoryId),
+    locationId: getSingleParam(params?.locationId),
+    stockStatus: normalizeStockStatus(getSingleParam(params?.stockStatus)),
+  };
+}
+
+function hasActiveFilters(filters: ComponentFilters) {
+  return Boolean(
+    filters.query ||
+      filters.categoryId ||
+      filters.locationId ||
+      filters.stockStatus,
+  );
+}
+
+function buildComponentWhere(filters: ComponentFilters): Prisma.ComponentWhereInput {
+  const and: Prisma.ComponentWhereInput[] = [];
+
+  if (filters.query) {
+    and.push({
+      OR: [
+        { name: { contains: filters.query } },
+        { description: { contains: filters.query } },
+        { value: { contains: filters.query } },
+        { unit: { contains: filters.query } },
+        { packageType: { contains: filters.query } },
+        { manufacturer: { contains: filters.query } },
+        { partNumber: { contains: filters.query } },
+        { notes: { contains: filters.query } },
+      ],
+    });
+  }
+
+  if (filters.categoryId) {
+    and.push({ categoryId: filters.categoryId });
+  }
+
+  if (filters.locationId) {
+    and.push({ locationId: filters.locationId });
+  }
+
+  if (filters.stockStatus === "low") {
+    and.push({
+      quantity: {
+        lte: prisma.component.fields.minimumQuantity,
+      },
+    });
+  }
+
+  if (filters.stockStatus === "ok") {
+    and.push({
+      quantity: {
+        gt: prisma.component.fields.minimumQuantity,
+      },
+    });
+  }
+
+  return and.length > 0 ? { AND: and } : {};
+}
+
+async function getComponentPageData(filters: ComponentFilters) {
   await connection();
 
-  const [components, categories, locations] = await Promise.all([
+  const where = buildComponentWhere(filters);
+
+  const [components, categories, locations, totalComponents] = await Promise.all([
     prisma.component.findMany({
+      where,
       orderBy: {
         createdAt: "desc",
       },
@@ -62,18 +153,26 @@ async function getComponentPageData() {
         name: true,
       },
     }),
+    prisma.component.count(),
   ]);
 
-  return { components, categories, locations };
+  return { components, categories, locations, totalComponents };
 }
 
 export default async function ComponentesPage({
   searchParams,
 }: ComponentesPageProps) {
-  const [{ components, categories, locations }, params] = await Promise.all([
-    getComponentPageData(),
-    searchParams,
-  ]);
+  const params = await searchParams;
+  const filters = getFilters(params);
+  const hasFilters = hasActiveFilters(filters);
+  const { components, categories, locations, totalComponents } =
+    await getComponentPageData(filters);
+  const feedback = {
+    created: getSingleParam(params?.created),
+    updated: getSingleParam(params?.updated),
+    deleted: getSingleParam(params?.deleted),
+    error: getSingleParam(params?.error),
+  };
 
   const lowStockItems = components.filter(
     (component) => component.quantity <= component.minimumQuantity,
@@ -120,18 +219,21 @@ export default async function ComponentesPage({
         </div>
       </div>
 
-      {(params?.created || params?.updated || params?.deleted || params?.error) && (
+      {(feedback.created ||
+        feedback.updated ||
+        feedback.deleted ||
+        feedback.error) && (
         <div
           className={`mt-6 rounded-md border p-4 text-sm ${
-            params.error
+            feedback.error
               ? "border-red-200 bg-red-50 text-red-700"
               : "border-emerald-200 bg-emerald-50 text-emerald-700"
           }`}
         >
-          {params.error ??
-            (params.updated
+          {feedback.error ||
+            (feedback.updated
               ? "Componente atualizado com sucesso."
-              : params.deleted
+              : feedback.deleted
                 ? "Componente excluido com sucesso."
                 : "Componente cadastrado com sucesso.")}
         </div>
@@ -150,6 +252,109 @@ export default async function ComponentesPage({
           </article>
         ))}
       </div>
+
+      <form
+        action="/componentes"
+        method="get"
+        className="mt-6 rounded-md border border-slate-200 bg-white p-5 shadow-sm"
+      >
+        <div className="flex flex-col gap-1 border-b border-slate-200 pb-4">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Buscar e filtrar
+          </h2>
+          <p className="text-sm text-slate-600">
+            Refine a listagem por texto, categoria, localizacao e status de
+            estoque.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-12">
+          <label className="lg:col-span-4">
+            <span className="text-sm font-medium text-slate-700">Busca</span>
+            <input
+              name="q"
+              type="search"
+              defaultValue={filters.query}
+              placeholder="Nome, valor, fabricante, part number..."
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            />
+          </label>
+
+          <label className="lg:col-span-2">
+            <span className="text-sm font-medium text-slate-700">
+              Categoria
+            </span>
+            <select
+              name="categoryId"
+              defaultValue={filters.categoryId}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            >
+              <option value="">Todas</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="lg:col-span-2">
+            <span className="text-sm font-medium text-slate-700">
+              Localizacao
+            </span>
+            <select
+              name="locationId"
+              defaultValue={filters.locationId}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            >
+              <option value="">Todas</option>
+              {locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="lg:col-span-2">
+            <span className="text-sm font-medium text-slate-700">
+              Status
+            </span>
+            <select
+              name="stockStatus"
+              defaultValue={filters.stockStatus}
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+            >
+              <option value="">Todos</option>
+              <option value="ok">OK</option>
+              <option value="low">Em baixa</option>
+            </select>
+          </label>
+
+          <div className="flex flex-wrap items-end gap-2 lg:col-span-2">
+            <button
+              type="submit"
+              className="rounded-md bg-cyan-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-800"
+            >
+              Aplicar filtros
+            </button>
+            <Link
+              href="/componentes"
+              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
+            >
+              Limpar
+            </Link>
+          </div>
+        </div>
+
+        {hasFilters && (
+          <p className="mt-4 text-sm text-slate-600">
+            {components.length.toLocaleString("pt-BR")} resultado
+            {components.length === 1 ? "" : "s"} encontrado
+            {components.length === 1 ? "" : "s"}.
+          </p>
+        )}
+      </form>
 
       <form
         action={createComponent}
@@ -369,11 +574,14 @@ export default async function ComponentesPage({
       {components.length === 0 ? (
         <div className="mt-6 rounded-md border border-dashed border-slate-300 bg-white p-6">
           <p className="text-sm font-medium text-slate-950">
-            Nenhum componente cadastrado ainda.
+            {hasFilters && totalComponents > 0
+              ? "Nenhum componente encontrado com os filtros atuais."
+              : "Nenhum componente cadastrado ainda."}
           </p>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Quando novos componentes forem cadastrados, eles aparecerão aqui com
-            categoria, localização, quantidade e estoque mínimo.
+            {hasFilters && totalComponents > 0
+              ? "Ajuste a busca ou limpe os filtros para voltar a ver todos os componentes cadastrados."
+              : "Quando novos componentes forem cadastrados, eles aparecerao aqui com categoria, localizacao, quantidade e estoque minimo."}
           </p>
         </div>
       ) : (
