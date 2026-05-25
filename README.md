@@ -31,11 +31,11 @@ O projeto usa uma stack local com SQLite e ainda nao possui autenticacao.
 
 ## Status do desenvolvimento
 
-O projeto possui uma base visual inicial com layout, menu lateral, dashboard operacional com estatisticas, itens em baixa, movimentacoes recentes e ultimos componentes cadastrados, gestao real de categorias e localizacoes, listagem de componentes com busca e filtros, ficha de componente com historico de movimentacoes, cadastro inicial de componentes com campos tecnicos opcionais, edicao segura de dados descritivos e tecnicos, exclusao segura de componentes sem historico de movimentacoes e registro manual de entradas, saidas e ajustes de estoque.
+O projeto possui uma base visual inicial com layout, menu lateral, dashboard operacional com estatisticas, itens em baixa, movimentacoes recentes e ultimos componentes cadastrados, gestao real de categorias e localizacoes, listagem de componentes com busca e filtros, ficha de componente com historico de movimentacoes, cadastro inicial de componentes com campos tecnicos opcionais, edicao segura de dados descritivos e tecnicos, exclusao segura de componentes sem historico de movimentacoes, registro manual de entradas, saidas e ajustes de estoque e auditoria inicial por categoria/localizacao com ajustes controlados.
 
 O Prisma esta configurado com SQLite local, schema inicial, migration aplicada e seed inicial de categorias e localizacoes.
 
-Ainda nao ha auditoria funcional ou BOM Checker implementado. A quantidade atual de componentes nao e editada diretamente no cadastro/edicao; ajustes de estoque sao tratados por movimentacoes manuais com historico. Componentes com historico de movimentacoes nao podem ser excluidos nesta etapa, para preservar rastreabilidade.
+Ainda nao ha BOM Checker implementado. A quantidade atual de componentes nao e editada diretamente no cadastro/edicao; ajustes de estoque sao tratados por movimentacoes manuais ou auditoria com historico. Componentes com historico de movimentacoes nao podem ser excluidos nesta etapa, para preservar rastreabilidade.
 
 ## Documentacao de produto
 
