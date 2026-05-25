@@ -6,6 +6,7 @@ Rota usada para consultar componentes reais cadastrados no banco local SQLite.
 
 - Paginas e componentes especificos da tela de componentes.
 - Formulario inicial de cadastro de componentes, incluindo campos tecnicos opcionais.
+- Ficha de detalhe do componente com historico de movimentacoes.
 - Rota de edicao de componentes existentes.
 - Acao visual de exclusao segura, com confirmacao antes de executar.
 - Consultas de leitura para listar componentes com categoria e localizacao.
@@ -31,10 +32,10 @@ O cadastro contempla fabricante, part number, link do datasheet e link de compra
 
 Quando a quantidade inicial e maior que zero, uma movimentacao de estoque do tipo `ENTRY` e registrada automaticamente.
 
+A rota `componentes/[id]` exibe uma ficha simples do componente, com dados principais, status de estoque, links tecnicos e historico de movimentacoes daquele componente em ordem da mais recente para a mais antiga. Componentes sem historico exibem estado vazio especifico.
+
 A rota tambem permite editar componentes existentes em `componentes/[id]/editar`. A edicao cobre nome, descricao, categoria, localizacao, valor, unidade, encapsulamento, estoque minimo, fabricante, part number, datasheet, link de compra e observacoes.
 
-A quantidade atual aparece apenas como informacao de leitura na tela de edicao. Ela nao e alterada diretamente porque representa estoque fisico; ajustes de estoque serao tratados por movimentacoes em etapa futura.
+A quantidade atual aparece apenas como informacao de leitura na tela de edicao. Ela nao e alterada diretamente porque representa estoque fisico; ajustes de estoque sao tratados pela rota de movimentacoes.
 
 A rota permite excluir componentes diretamente pela listagem, sempre com confirmacao visual antes do envio. A exclusao e bloqueada quando o componente possui qualquer `StockMovement` associado, preservando o historico de estoque. Quando nao ha historico, apenas o `Component` e removido.
-
-Ainda nao ha movimentacoes manuais.

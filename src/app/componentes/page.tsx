@@ -709,6 +709,12 @@ export default async function ComponentesPage({
                   )}
                   <div className="flex flex-wrap justify-end gap-2 sm:col-span-12">
                     <Link
+                      href={`/componentes/${component.id}`}
+                      className="inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
+                    >
+                      Historico
+                    </Link>
+                    <Link
                       href={`/componentes/${component.id}/editar`}
                       className="inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-cyan-700 hover:text-cyan-800"
                     >
